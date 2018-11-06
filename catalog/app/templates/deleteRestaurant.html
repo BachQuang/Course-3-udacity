@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+
+<h2> Are you sure you want to delete {{restaurant.name}}? </h2>
+
+<form action="#" method = 'post'>
+	<a href = '{{url_for('show_restaurants')}}'>
+		<button class="btn btn-default delete">
+			delete
+		</button>
+	</a>
+
+</form>
+
+{% endblock %}
