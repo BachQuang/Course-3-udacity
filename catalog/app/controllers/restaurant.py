@@ -4,7 +4,7 @@ import json
 
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 
-from app.utils.helper import login_session
+from app.utils.helper import login_session, authenticated
 from . import session, asc
 from app import app
 from app.models.user import User
@@ -49,9 +49,8 @@ def show_restaurants():
 
 
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
+@authenticated
 def create_new_restaurant():
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         create_new_restaurant = Restaurant(
             name=request.form['name'], user_id=login_session['user_id'])
@@ -68,11 +67,10 @@ def create_new_restaurant():
 
 
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
+@authenticated
 def edit_restaurant(restaurant_id):
     edited_restaurant = session.query(
         Restaurant).filter_by(id=restaurant_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if edited_restaurant.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
@@ -88,11 +86,10 @@ def edit_restaurant(restaurant_id):
 
 # Delete a restaurant
 @app.route('/restaurant/<int:restaurant_id>/delete/', methods=['GET', 'POST'])
+@authenticated
 def delete_restaurant(restaurant_id):
     restaurant_to_be_delete = session.query(
         Restaurant).filter_by(id=restaurant_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if restaurant_to_be_delete.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
